@@ -1,5 +1,4 @@
 from PyQt6 import QtWidgets
-from PyQt6.QtGui import QPixmap
 from chart_creater import create_chart
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import sys
@@ -16,12 +15,9 @@ class MainWindows(QtWidgets.QMainWindow):
         self.grview = QtWidgets.QGraphicsView(self)
         self.grview.setGeometry(25, 25, 600, 400)
         self.grview.setStyleSheet('background-color:#6C6C6C')
-        scene = QtWidgets.QGraphicsScene()
-        scene.setSceneRect(0, 0, 590, 390)
-        img = QPixmap('temp/chart.png')
-        img = img.scaled(590, 390)
-        scene.addPixmap(img)
-        self.grview.setScene(scene)
+        self.scene = QtWidgets.QGraphicsScene()
+        self.scene.setSceneRect(0, 0, 590, 390)
+        self.grview.setScene(self.scene)
         
         # 圖表更新按鈕
         update_btn = QtWidgets.QPushButton(self)
@@ -33,50 +29,51 @@ class MainWindows(QtWidgets.QMainWindow):
         # 圖表類型選擇按鈕
         chart_type_label = QtWidgets.QLabel(self)
         chart_type_label.setText('圖表類型:')
-        chart_type_label.setGeometry(700, 30, 300, 30)
+        chart_type_label.setGeometry(700, 30, 100, 30)
         chart_type_label.setStyleSheet('font-size:20px')
         self.chart_type = QtWidgets.QComboBox(self)
         self.chart_type.addItem('折線圖')
         self.chart_type.addItem('長條圖')
-        self.chart_type.setGeometry(800, 30, 300, 30)
+        self.chart_type.setGeometry(800, 30, 200, 30)
         self.chart_type.setStyleSheet('font-size:20px')
 
         # 圖表標題輸入框
         chart_title_label = QtWidgets.QLabel(self)
         chart_title_label.setText('圖表標題:')
-        chart_title_label.setGeometry(700, 100, 300, 30)
+        chart_title_label.setGeometry(700, 100, 100, 30)
         chart_title_label.setStyleSheet('font-size:20px')
         self.chart_title = QtWidgets.QLineEdit(self)
-        self.chart_title.setGeometry(800, 100, 300, 30)
+        self.chart_title.setGeometry(800, 100, 200, 30)
         self.chart_title.setStyleSheet('font-size:20px')
 
         # X軸標籤輸入框
         x_label_label = QtWidgets.QLabel(self)
         x_label_label.setText('X軸標籤:')
-        x_label_label.setGeometry(700, 170, 300, 30)
+        x_label_label.setGeometry(700, 170, 100, 30)
         x_label_label.setStyleSheet('font-size:20px')
         self.x_label = QtWidgets.QLineEdit(self)
-        self.x_label.setGeometry(800, 170, 300, 30)
+        self.x_label.setGeometry(800, 170, 200, 30)
         self.x_label.setStyleSheet('font-size:20px')
 
         # Y軸標籤輸入框
         y_label_label = QtWidgets.QLabel(self)
         y_label_label.setText('Y軸標籤:')
-        y_label_label.setGeometry(700, 240, 300, 30)
+        y_label_label.setGeometry(700, 240, 100, 30)
         y_label_label.setStyleSheet('font-size:20px')
         self.y_label = QtWidgets.QLineEdit(self)
-        self.y_label.setGeometry(800, 240, 300, 30)
+        self.y_label.setGeometry(800, 240, 200, 30)
         self.y_label.setStyleSheet('font-size:20px')
 
     def update_chart(self):
         self.clear_temp()
-        create_chart('data.xlsx', self.chart_title.text(), self.x_label.text(), self.y_label.text(), self.chart_type.currentText())
-        scene = QtWidgets.QGraphicsScene()
-        scene.setSceneRect(0, 0, 590, 390)
-        img = QPixmap('temp/chart.png')
-        img = img.scaled(590, 390)
-        scene.addPixmap(img)
-        self.grview.setScene(scene)
+        fig = create_chart('data.xlsx', self.chart_title.text(), self.x_label.text(), self.y_label.text(), self.chart_type.currentText())
+
+        if fig:
+            canvas = FigureCanvas(fig)
+            self.scene.clear()
+            self.scene.addWidget(canvas)
+            self.grview.setScene(self.scene)
+
 
     def clear_temp(self):
         if os.path.exists('temp/chart.png'):
