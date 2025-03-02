@@ -1,4 +1,5 @@
 from chart_creater import create_chart
+import matplotlib.pyplot as plt
 import argparse
 
 def main():
@@ -8,9 +9,9 @@ def main():
     parser.add_argument('--x', type=str,default="X axis", help='X軸的標籤')
     parser.add_argument('--y', type=str,default='Y axis', help='Y軸的標籤')
     parser.add_argument('--type', type=str, default='line', help='圖表的類型')
-
     args = parser.parse_args()
     create_chart(args.excel, args.title, args.x, args.y, args.type)
+    plt.show()
 
 if __name__ == '__main__':
     main()

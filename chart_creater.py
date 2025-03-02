@@ -3,20 +3,30 @@ from matplotlib.font_manager import FontProperties as font
 import matplotlib.pyplot as plt
 
 font1 = font(fname=r'fonts\NotoSansTC-Black.ttf')
-
 import openpyxl
 
 def load_excel_to_data(filename: str) -> list:
-    workbook = openpyxl.load_workbook(filename, read_only=True)
-    worksheet = workbook.active
-    data = [[], []]
-    for i in range(2):
-        for j in range(2, worksheet.max_column + 1):
-            data[i].append(worksheet.cell(row=i + 1, column=j).value)
-    return data
+    wb = openpyxl.load_workbook('data.xlsx')
+    ws = wb.active
+    data = [[]for _ in range(ws.max_row)]
+    x_list = []
+    y_list = []
+    result = []
 
+    for i in range(1, ws.max_row+1):
+        for j in range(1, ws.max_column+1):
+            data[i-1].append(ws.cell(row=i, column=j).value)
 
-def create_chart(filename: str, title: str, x_label: str, y_label: str, chart_type: str):
+    for i in range(2, ws.max_row+1):
+        x_list.append(data[i-1][0])
+        y_list.append(data[i-1][1])
+    
+    result.append(x_list)
+    result.append(y_list)
+    return result
+
+def create_chart(filename: str, title: str, x_label: str,
+                  y_label: str, chart_type: str) -> plt.figure:
     data = load_excel_to_data(filename)
     fig, ax = plt.subplots(figsize=(6, 3.7))
     if chart_type == '折線圖':
@@ -28,3 +38,4 @@ def create_chart(filename: str, title: str, x_label: str, y_label: str, chart_ty
     ax.set_ylabel(y_label, fontproperties=font1, fontsize=15)
     return fig
 
+print(load_excel_to_data('data.xlsx'))
