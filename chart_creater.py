@@ -9,7 +9,6 @@ def load_excel_to_data(filename) -> list:
     data = [[]for _ in range(ws.max_row)]
     x_list = []
     y_list = []
-    info = []
     result = []
 
     for i in range(1, ws.max_row+1):
@@ -22,19 +21,29 @@ def load_excel_to_data(filename) -> list:
     
     result.append(x_list)
     result.append(y_list)
-    result.append(info)
-
-	# 數據計算
-    average = sum(y_list)/len(y_list)
-    deviation = 0
-    for i in y_list:
-        deviation += pow(i - average, 2)
-    deviation /= len(y_list)
-    info.append(average)
-    info.append(deviation)
 
     return result # result[0]為x座標 result[1]為y座標 
-	              # result[2][0]為y座標平均數 result[2][1]為變異數
+
+def analyze_data(data: list) -> list:
+    # 數據計算
+    info = []
+    average = sum(data[1])/len(data[1])
+    deviation = 0
+    for i in data[1]:
+        deviation += pow(i - average, 2)
+    deviation /= len(data[1])
+    info.append(average)
+    info.append(deviation)
+    x_max = max(data[0])
+    x_min = min(data[0])
+    y_max = max(data[1])
+    y_min = min(data[1])
+    info.append(x_min)
+    info.append(x_max)
+    info.append(y_min)
+    info.append(y_max)
+    return info # info[0]為平均數 info[1]為變異數 info[2]為x最小值 info[3]為x最大值 info[4]為y最小值 info[5]為y最大值
+
 
 def create_chart(filename: str, title: str, x_label: str,
                   y_label: str, chart_type: str,
@@ -70,6 +79,7 @@ def create_chart(filename: str, title: str, x_label: str,
     if data_display:
         for a, b in zip(data[0], data[1]):
             ax.text(a, b, b, ha='center', va='bottom', fontsize=10)
+    info = analyze_data(data)
     # 平均數、離均差顯示
-#    ax.text(5.8, 0.5, f"平均數: {data[2][0]}\n變異數: {data[2][1]}", fontdict={'fontproperties': font1, 'fontsize': 15})
+    ax.text(5.8, 0.5, f"平均數: {info[0]}\n變異數: {info[1]}", fontdict={'fontproperties': font1, 'fontsize': 15})
     return fig

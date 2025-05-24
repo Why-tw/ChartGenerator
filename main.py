@@ -1,5 +1,5 @@
 from PyQt6 import QtWidgets
-from chart_creater import create_chart
+from chart_creater import create_chart, load_excel_to_data, analyze_data
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import sys
 import os
@@ -12,6 +12,11 @@ class MainWindows(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Chart Generator')
+        info =  analyze_data(load_excel_to_data('data.xlsx'))
+        self.x_min = info[2]
+        self.x_max = info[3]
+        self.y_min = info[4]
+        self.y_max = info[5]
         self.ui()
         self.update_chart() # 初始化圖表
 
@@ -105,7 +110,7 @@ class MainWindows(QtWidgets.QMainWindow):
         self.range_xmin = QtWidgets.QLineEdit(self)
         self.range_xmin.setGeometry(1100, start+5*r, 50, 30)
         self.range_xmin.setStyleSheet('font-size:20px')
-        self.range_xmin.setText('0')
+        self.range_xmin.setText(str(self.x_min-10))
         rlabel1 = QtWidgets.QLabel(self)
         rlabel1.setText('~')
         rlabel1.setGeometry(1160, start+5*r, 50, 30)
@@ -113,7 +118,7 @@ class MainWindows(QtWidgets.QMainWindow):
         self.range_xmax = QtWidgets.QLineEdit(self)
         self.range_xmax.setGeometry(1190, start+5*r, 50, 30)
         self.range_xmax.setStyleSheet('font-size:20px')
-        self.range_xmax.setText('20')
+        self.range_xmax.setText(str(self.x_max+10))
 
         yrange_label = QtWidgets.QLabel(self)
         yrange_label.setText('Y軸:')
@@ -122,7 +127,7 @@ class MainWindows(QtWidgets.QMainWindow):
         self.range_ymin = QtWidgets.QLineEdit(self)
         self.range_ymin.setGeometry(1100, 450, 50, 30)
         self.range_ymin.setStyleSheet('font-size:20px')
-        self.range_ymin.setText('0')
+        self.range_ymin.setText(str(self.y_min-10))
         rlabel2 = QtWidgets.QLabel(self)
         rlabel2.setText('~')
         rlabel2.setGeometry(1160, 450, 50, 30)
@@ -130,7 +135,7 @@ class MainWindows(QtWidgets.QMainWindow):
         self.range_ymax = QtWidgets.QLineEdit(self)
         self.range_ymax.setGeometry(1190, 450, 50, 30)
         self.range_ymax.setStyleSheet('font-size:20px')
-        self.range_ymax.setText('20')
+        self.range_ymax.setText(str(self.y_max+10))
 
         # 數據顯示勾選
         self.data_display = QtWidgets.QCheckBox(self)
